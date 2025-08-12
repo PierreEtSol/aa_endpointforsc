@@ -18,7 +18,6 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-use controller\AbstractNotificationController;
 
 require_once __DIR__ . '/../AbstractNotificationController.php';
 

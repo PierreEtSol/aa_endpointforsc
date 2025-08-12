@@ -3,15 +3,11 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-    require_once __DIR__ . '/vendor/autoload.php';
-}
-
-class Aa_Endpointsc extends Module
+class Aa_Endpointforsc extends Module
 {
     public function __construct()
     {
-        $this->name = 'aa_endpointsc';
+        $this->name = 'aa_endpointforsc';
         $this->tab = 'shipping_logistics';
         $this->author = 'Adib Aroui';
         $this->version = '1.0.0';
@@ -22,6 +18,7 @@ class Aa_Endpointsc extends Module
             'max' => _PS_VERSION_,
         ];
 
+        $this->need_instance = 0;
         $this->bootstrap = true;
         parent::__construct();
 
@@ -31,6 +28,7 @@ class Aa_Endpointsc extends Module
 
     public function install()
     {
+        //var_dump('hi');die;
         return parent::install()
             && $this->registerHook('moduleRoutes')
         ;
@@ -46,7 +44,7 @@ class Aa_Endpointsc extends Module
      */
     public function hookModuleRoutes(array $params)
     {
-
+        //var_dump($this->getModuleRoutes('ModuleRoutes', 'customapi'));die;
         return $this->getModuleRoutes('ModuleRoutes', 'customapi');
     }
 
