@@ -19,10 +19,33 @@
  */
 
 
-require_once __DIR__ . '/../AbstractNotificationController.php';
+//require_once __DIR__ . '/../AbstractNotificationController.php';
 
-class Aa_endpointscNotificationModuleFrontController extends AbstractNotificationController
+class Aa_endpointforscNotificationModuleFrontController extends ModuleFrontController
 {
+    public function init()
+    {
+
+        parent::init();
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'GET':
+                $this->processGetRequest();
+                break;
+            case 'POST':
+                $this->processPostRequest();
+                break;
+            case 'PATCH': // you can also separate these into their own methods
+            case 'PUT':
+                $this->processPutRequest();
+                break;
+            case 'DELETE':
+                $this->processDeleteRequest();
+                break;
+            default:
+                // throw some error or whatever
+        }
+    }
+
     protected function processGetRequest()
     {
         // do something then output the result
@@ -34,6 +57,7 @@ class Aa_endpointscNotificationModuleFrontController extends AbstractNotificatio
 
     protected function processPostRequest()
     {
+        var_dump($_POST);die;
         // do something then output the result
         $this->ajaxDie(json_encode([
             'success' => true,

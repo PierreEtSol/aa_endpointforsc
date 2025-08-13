@@ -52,13 +52,13 @@ class Aa_Endpointforsc extends Module
     {
         if ($ModuleRoutes == 'ModuleRoutes') {
             return array(
-                'module-aa_endpointsc-products' => array(
+                'module-aaendpointsc-products' => array(
                     'controller' => 'notification',
                     'rule'       => $alias. '/sendcloud' ,
                     'keywords'   => array(),
                     'params'     => array(
                         'fc'     => 'module',
-                        'module' => 'aa_endpointsc',
+                        'module' => 'aa_endpointforsc',
                     ),
                 )
             );
