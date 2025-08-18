@@ -19,13 +19,13 @@
  */
 
 
-//require_once __DIR__ . '/../AbstractNotificationController.php';
+require_once __DIR__ . '/../../classes/Logger/CustomLogger.php';
+require_once __DIR__ . '/../../classes/Shipment/Parcel.php';
 
 class Aa_endpointforscNotificationModuleFrontController extends ModuleFrontController
 {
     public function init()
     {
-
         parent::init();
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
@@ -48,6 +48,7 @@ class Aa_endpointforscNotificationModuleFrontController extends ModuleFrontContr
 
     protected function processGetRequest()
     {
+
         // do something then output the result
         $this->ajaxDie(json_encode([
             'success' => true,
@@ -57,8 +58,58 @@ class Aa_endpointforscNotificationModuleFrontController extends ModuleFrontContr
 
     protected function processPostRequest()
     {
-        var_dump($_POST);die;
+        $rawData = file_get_contents("php://input");
+
+        // If the data is JSON, you can decode it
+        $data = json_decode($rawData, true); // true for associative array
+
+        if ($data) {
+            //echo "Received JSON data:<br>";
+            //print_r($data);
+            //error_log('Debug: ' . print_r($data['parcel']['carrier']['code'], true));
+            //CustomLogger::log($data['parcel']['carrier']);
+            CustomLogger::log($data['parcel']['shipment']);
+            $code = $data['parcel']['shipment']['code'];
+            //CustomLogger::log($data['parcel']['order_number']);
+            //CustomLogger::log("AAAAAAAAAAAAAA\n");
+            $idCarrier = Parcel::getPsIdCarrierFromScShipmentCode($code);
+
+            $idOrder = (int) $data['parcel']['order_number'];
+            $order =  new Order($idOrder);
+            $oldIdCarrier = $order->id_carrier;
+            $order->id_carrier = $idCarrier;
+            $result = $order->update();
+            CustomLogger::log( $result);
+
+
+
+
+
+            // Update order_carrier
+            $id_order_carrier = Db::getInstance()->getValue('
+                SELECT `id_order_carrier`
+                FROM `' . _DB_PREFIX_ . 'order_carrier`
+                WHERE `id_order` = ' . (int)$order->id
+                );
+
+            if ($id_order_carrier) {
+                $order_carrier = new OrderCarrier((int) $id_order_carrier);
+                $order_carrier->id_carrier = (int)$idCarrier;
+                $result = $order_carrier->update();
+                CustomLogger::log( $result);
+            }
+
+//            Hook::exec('actionCarrierUpdate', [
+//                'id_carrier' => $oldIdCarrier,
+//                'carrier' => new Carrier((int)$idCarrier),
+//            ]);
+        }//PrestaShopLogger::addLog('My variable value: ' . implode('', array_keys($_POST), true)), 1, null, 'MyModule');
+        //file_put_contents('webhook_log.txt', "Received parcel update for ID:\n", FILE_APPEND);
+        //var_dump($_POST);die;
         // do something then output the result
+        //$order = new Order((int)$data['parcel']['order_number']);
+
+
         $this->ajaxDie(json_encode([
             'success' => true,
             'operation' => 'post'
