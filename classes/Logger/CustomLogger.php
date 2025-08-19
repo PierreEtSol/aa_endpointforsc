@@ -1,4 +1,7 @@
 <?php
+
+namespace PrestaShop\Module\AaEndpointForSc\Logger;
+
 class CustomLogger {
     const DEFAULT_LOG_FILE ="prestashop_system.log";
     public static function log($message){

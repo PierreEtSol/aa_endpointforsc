@@ -1,4 +1,8 @@
 <?php
+
+namespace PrestaShop\Module\AaEndpointForSc\Shipment;
+
+
 interface CarrierProxy
 {
     const CARRIER_LIST = [

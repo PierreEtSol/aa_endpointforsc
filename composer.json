@@ -1,0 +1,21 @@
+{
+  "name": "arouiadib/aa_endpointforsc",
+  "description": "Implement an endpoint for Parcel Status Update Webhook",
+  "type": "library",
+  "version": "1.0.0",
+  "require": {
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-openssl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "PrestaShop\\Module\\AaEndpointForSc\\": "classes/"
+    },
+    "classmap": ["aa_endpointforsc.php"],
+    "exclude-from-classmap": []
+  },
+  "config": {
+    "prepend-autoloader": false
+  }
+}
