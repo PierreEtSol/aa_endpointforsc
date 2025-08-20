@@ -6,7 +6,8 @@
   "require": {
     "ext-curl": "*",
     "ext-json": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "picqer/sendcloud-php-client": "^2.10"
   },
   "autoload": {
     "psr-4": {
