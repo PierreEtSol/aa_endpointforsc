@@ -3,6 +3,14 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
+use PrestaShop\Module\AaEndpointForSC\Repository\CarrierMappingRepository;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+#use PrestaShop\Module\AaCarriersFooter\Model\CarrierFooter;
+
 class Aa_Endpointforsc extends Module
 {
     public function __construct()
@@ -26,17 +34,66 @@ class Aa_Endpointforsc extends Module
         $this->description = $this->trans('This module creates an endpoint URL that will receive notifications from SC webhook', [], 'Modules.Endpointsc.Admin');
     }
 
+
     public function install()
     {
-        //var_dump('hi');die;
-        return parent::install()
+        if (!parent::install()) {
+            return false;
+        }
+        $installed = false;
+        if (null !== $this->getRepository()) {
+            $installed = $this->installDatabase();
+        }
+
+        if ($installed
             && $this->registerHook('moduleRoutes')
-        ;
+        ) {
+            return $installed;
+        }
+
+        $this->uninstall();
+
+        return $installed;
     }
 
     public function uninstall()
     {
         return parent::uninstall();
+    }
+    public function installDatabase() {
+
+        $installed = true;
+
+        $errors = $this->repository->createTables();
+
+        if (!empty($errors)) {
+            $this->addModuleErrors($errors);
+            $installed = false;
+        }
+
+        return $installed;
+    }
+
+    public function getRepository() {
+        if (is_null($this->repository) ) {
+            try {
+                $this->repository = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository');
+            } catch (\Exception $e) {
+                /** @var LegacyContext $context */
+                $legacyContext = $this->get('prestashop.adapter.legacy.context');
+                /** @var Context $shopContext */
+                $shopContext = $this->get('prestashop.adapter.shop.context');
+
+                $this->repository = new CarrierMappingRepository(
+                    $this->get('doctrine.dbal.default_connection'),
+                    SymfonyContainer::getInstance()->getParameter('database_prefix'),
+                    $legacyContext->getLanguages(true, $shopContext->getContextShopID()),
+                    $this->get('translator')
+                );
+            }
+        }
+
+        return $this->repository;
     }
 
     /**
@@ -44,7 +101,6 @@ class Aa_Endpointforsc extends Module
      */
     public function hookModuleRoutes(array $params)
     {
-        //var_dump($this->getModuleRoutes('ModuleRoutes', 'customapi'));die;
         return $this->getModuleRoutes('ModuleRoutes', 'customapi');
     }
 
@@ -64,5 +120,44 @@ class Aa_Endpointforsc extends Module
             );
         }
     }
+
+    private function installTab()
+    {
+        $tabId = (int) Tab::getIdFromClassName('AaCarrierFooterController');
+        if (!$tabId) {
+            $tabId = null;
+        }
+
+        $tab = new Tab($tabId);
+        $tab->active = 1;
+        $tab->class_name = 'AaCarrierMappingController';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = "SendCloud Carriers Mapping";
+        }
+        $tab->id_parent = (int) Tab::getIdFromClassName('AdminParentShipping');
+        $tab->route_name = 'admin_carrier_mapping_form_view';
+        $tab->module = $this->name;
+
+        return $tab->save();
+    }
+
+    private function uninstallTab()
+    {
+        $tabId = (int) Tab::getIdFromClassName('AaCarrierMappingController');
+        if (!$tabId) {
+            return true;
+        }
+
+        $tab = new Tab($tabId);
+
+        return $tab->delete();
+    }
+
+    public function isUsingNewTranslationSystem()
+    {
+        return true;
+    }
+
 
 }

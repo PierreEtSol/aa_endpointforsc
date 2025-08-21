@@ -1,0 +1,14 @@
+admin_carrier_mapping_form_view:
+  path: /carrier_mapping/view
+  methods: [ GET, POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\AaEndpointForSc\Controller\CarrierMappingController::viewAction'
+    _legacy_controller: 'AaCarrierMappingController'
+    _legacy_link: 'AaCarrierMappingController'
+
+admin_carrier_mapping_process:
+  path:  /carrier_mapping/process
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\AaCrossSelling\Controller\CarrierMappingController::processAction'
+    _legacy_controller: 'AaCarrierMappingController'

@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    public: true
+
+  prestashop.module.aa_endpointforsc.carrier_mapping.repository:
+    class: PrestaShop\Module\AaCrossSelling\Repository\CarrierMappingRepository
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+      $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
+      $translator: '@translator'
+      $isMultiStoreUsed: '@=service("prestashop.adapter.feature.multistore").isUsed()'
+      $multiStoreContext: '@prestashop.adapter.shop.context'
+      $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
