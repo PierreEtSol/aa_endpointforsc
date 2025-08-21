@@ -12,3 +12,35 @@ services:
       $isMultiStoreUsed: '@=service("prestashop.adapter.feature.multistore").isUsed()'
       $multiStoreContext: '@prestashop.adapter.shop.context'
       $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
+
+  prestashop.module.aa_endpointforsc.carrier_mapping.repository.form_handler:
+    class: PrestaShop\PrestaShop\Core\Form\FormHandler
+    arguments:
+      $formBuilder: '@=service("form.factory").createBuilder()'
+      $hookDispatcher: '@prestashop.core.hook.dispatcher'
+      $formDataProvider: '@prestashop.module.aa_endpointforsc.carrier_mapping.form_provider'
+      $formTypes:
+        'carrier_mapping': 'PrestaShop\Module\AaEndpointForSc\Form\Type\CarrierMappingType'
+      $hookName: 'AdminLinkWidget'
+
+  prestashop.module.aa_endpointforsc.carrier_mapping.form_type:
+    class: PrestaShop\Module\AaEndpointForSc\Form\Type\CarrierMappingType
+    parent: 'form.type.translatable.aware'
+    public: true
+    arguments:
+      $translator: '@translator'
+      $repository: '@prestashop.module.aa_endpointforsc.carrier_mapping.repository'
+    tags:
+      - { name: form.type }
+
+  prestashop.module.aa_endpointforsc.carrier_mapping.form_provider:
+    class: PrestaShop\Module\AaEndpointForSc\Form\CarrierMappingFormDataProvider
+    arguments:
+      $repository: '@prestashop.module.aa_endpointforsc.carrier_mapping.repository'
+      $cache: '@prestashop.module.aa_endpointforsc.cache'
+      $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
+      $shopId: '@=service("prestashop.adapter.shop.context").getContextShopID()'
+
+
+  prestashop.module.aa_endpointforsc.cache:
+    class: PrestaShop\Module\AaCrossSelling\Cache\LegacyLinkBlockCache

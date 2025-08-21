@@ -1,0 +1,34 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+{% trans_default_domain "Admin.Design.Feature" %}
+{% form_theme crossSellingForm '@Modules/aa_crossselling/views/templates/admin/fields.html.twig' %}
+
+{% block content %}
+  {% set formAction = url('admin__crossselling_global_process') %}
+  {{ form_start(crossSellingForm, {'action': formAction, 'attr': {'class': 'form', 'id': 'link_block_form'}}) }}
+    <div class="row justify-content-center">
+      <div class="col-xl-10">
+        <div class="card">
+          <h3 class="card-header">
+            <i class="material-icons">mode_edit</i>
+              {{ 'List of global crosselling products'|trans({}, 'Modules.AaCrossselling.Admin') }}
+          </h3>
+          <div class="card-block">
+            <div class="card-text">
+              {{ form_row(crossSellingForm.global) }}
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-primary">{{ 'Save'|trans({}, 'Admin.Actions') }}</button>
+          </div>
+        </div>
+      </div>
+   {{ form_end(crossSellingForm) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ asset('../modules/aa_crossselling/views/public/form.bundle.js') }}"></script>
+{% endblock %}

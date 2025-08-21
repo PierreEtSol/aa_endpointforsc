@@ -1,0 +1,17 @@
+{% if type is same as('product') %}
+  {% if orderProducts|length is same as (0) %}
+    {{ 'No available cross selling products from old orders'|trans({}, 'Modules.AaCrossSelling.Admin') }}
+  {% else %}
+    {{ 'Available cross selling products from old orders'|trans({}, 'Modules.AaCrossSelling.Admin') }}
+    <ul id="ulcso" class="list-unstyled">
+      {% for key,product in orderProducts %}
+        <li id="product_{{ product.product_id  }}" style="margin-bottom: 5px;">
+          <span>
+            <img src="{{ product.image }}" width="45">
+            {{ product.name }}
+        </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endif %}
