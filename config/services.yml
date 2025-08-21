@@ -3,7 +3,7 @@ services:
     public: true
 
   prestashop.module.aa_endpointforsc.carrier_mapping.repository:
-    class: PrestaShop\Module\AaCrossSelling\Repository\CarrierMappingRepository
+    class: PrestaShop\Module\AaEndpointForSc\Repository\CarrierMappingRepository
     arguments:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'

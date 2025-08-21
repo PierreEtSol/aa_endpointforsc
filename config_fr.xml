@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>aa_endpointforsc</name>
+    <displayName><![CDATA[AA SendCloud WebHook Endpoint]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[This module creates an endpoint URL that will receive notifications from SC webhook]]></description>
+    <author><![CDATA[Adib Aroui]]></author>
+    <tab><![CDATA[shipping_logistics]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>

@@ -13,6 +13,8 @@ use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
 class Aa_Endpointforsc extends Module
 {
+    private $repository;
+
     public function __construct()
     {
         $this->name = 'aa_endpointforsc';
@@ -159,5 +161,18 @@ class Aa_Endpointforsc extends Module
         return true;
     }
 
+
+    public function enable($force_all = false)
+    {
+        return parent::enable($force_all)
+            && $this->installTab();
+    }
+
+    public function disable($force_all = false)
+    {
+        return parent::disable($force_all)
+            && $this->uninstallTab()
+            ;
+    }
 
 }
