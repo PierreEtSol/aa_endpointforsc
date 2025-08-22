@@ -43,4 +43,4 @@ services:
 
 
   prestashop.module.aa_endpointforsc.cache:
-    class: PrestaShop\Module\AaCrossSelling\Cache\LegacyLinkBlockCache
+    class: PrestaShop\Module\AaEndpointForSc\Cache\LegacyLinkBlockCache

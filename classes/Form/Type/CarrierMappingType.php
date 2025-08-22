@@ -34,23 +34,16 @@ class CarrierMappingType extends TranslatorAwareType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $translator = $this->getTranslator();
-        $products = $this->repository->getGlobalCrossSellingProducts();
-        foreach($products as &$product) {
-            $productTmp = new Product($product['id_product'], false, Context::getContext()->language->id);
-            $img = $productTmp->getCover($productTmp->id);
-            $image_type = 'small_default'; //Mirar el ftp para ver otros tipos
-            $imagen = Context::getContext()->link->getImageLink(isset($productTmp->link_rewrite) ? $productTmp->link_rewrite : $productTmp->name, (int)$img['id_image'], $image_type);
-            $product['image'] = $imagen;
-        }
+        $mapping = $this->repository->getCarrierMapping();
+
         $builder
             ->add('crossselling_products', CustomContentType::class, [
                 'label' => $translator->trans('Products', [],'Modules.AaCrossselling.Admin'),
                 'required' => false,
                 'attr' => ['class' => 'col-md-12'],
-                'template' => '@Modules/aa_crossselling/views/templates/admin/crossselling_subform.html.twig',
+                'template' => '@Modules/aa_endpointforsc/views/templates/admin/subform.html.twig',
                 'data' => [
-                    'products' => $products,
-                    'type' => 'global'
+                    'mapping' => $mapping
                 ],
             ]);
     }

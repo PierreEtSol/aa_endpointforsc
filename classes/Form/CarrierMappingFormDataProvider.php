@@ -2,9 +2,9 @@
 
 namespace PrestaShop\Module\AaEndpointForSc\Form;
 
-use PrestaShop\Module\AaCrossSelling\Cache\LinkBlockCacheInterface;
+use PrestaShop\Module\AaEndpointForSc\Cache\LinkBlockCacheInterface;
 use PrestaShop\Module\AaCarriersFooter\Model\CarrierFooter;
-use PrestaShop\Module\AaCrossSelling\Repository\CrossRepository;
+use PrestaShop\Module\AaEndpointForSc\Repository\CarrierMappingRepository;
 use PrestaShop\PrestaShop\Core\Addon\Module\ModuleRepository;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
@@ -41,14 +41,14 @@ class CarrierMappingFormDataProvider implements FormDataProviderInterface
     /**
      * LinkBlockFormDataProvider constructor.
      *
-     * @param CrossRepository $repository
+     * @param CarrierMappingRepository $repository
      * @param LinkBlockCacheInterface $cache
      * @param ModuleRepository $moduleRepository
      * @param array $languages
      * @param int $shopId
      */
     public function __construct(
-        CrossRepository $repository,
+        CarrierMappingRepository $repository,
         LinkBlockCacheInterface $cache,
         array $languages,
         $shopId

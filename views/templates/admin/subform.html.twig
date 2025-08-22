@@ -1,0 +1,23 @@
+<div id= "crossselling_subform" class="form-group row">
+  <div class="col-md-12">
+    <ul id="ulcs" class="list-unstyled">
+      {% for sc_carrier in mapping %}
+        <li id="product_{{ product.id_product }}" class="cellColumn">
+        <span class="cellColumnName">
+          <p class="mb-0 productReference">
+            {{ sc_carrier.code }}
+          </p>
+        </span>
+          <span class="text-right cellColumnActions">
+
+{#          <input id="hidden_{{ product.id_product }}"#}
+{#                 type="hidden" value="{{ product.id_product }}"#}
+{#                 name="{{ type }}[crossselling][{{ product.id_product }}][id_product]">#}
+        </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+

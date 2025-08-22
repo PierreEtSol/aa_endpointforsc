@@ -170,23 +170,17 @@ class CarrierMappingRepository
     /**
      * @return array
      */
-    public function getCategoryCrossSellingProducts($idCategory)
+    public function getCarrierMapping()
     {
-
         $qb = $this->connection->createQueryBuilder();
 
-        $qb->select('ccp.id_product, pl.name, ccp.is_primary ')
-            ->from($this->dbPrefix . 'crossselling_category_product', 'ccp')
-            ->innerJoin('ccp', $this->dbPrefix . 'product_lang', 'pl', 'ccp.id_product = pl.id_product')
-            ->andWhere('ccp.id_category = :categoryId')
-            ->andWhere('pl.id_lang = :langId')
-            ->setParameter('categoryId', $idCategory)
-            ->setParameter('langId', $this->idLang)
+        $qb->select('sc.id_sc_carrier, sc.code, scm.id_ps_reference_carrier ')
+            ->from($this->dbPrefix . 'sendcloud_carrier', 'sc')
+            ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier_mapping', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
         ;
 
-        $products = $qb->execute()->fetchAll();
-        //var_dump($products); die;
-        return $products;
+        $mapping = $qb->execute()->fetchAll();
+        return $mapping;
     }
 
 }

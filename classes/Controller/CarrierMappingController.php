@@ -10,9 +10,9 @@ class CarrierMappingController extends FrameworkBundleAdminController
     public function viewAction(Request $request)
     {
         //$this->get('prestashop.module.aa_carriersfooter.form_provider')->setIdcarrierFooter($carrierFooterId);
-        $form = $this->get('prestashop.module.aa_crossselling.global.form_handler')->getForm();
+        $form = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository.form_handler')->getForm();
 
-        return $this->render('@Modules/aa_crossselling/views/templates/admin/form.html.twig', [
+        return $this->render('@Modules/aa_endpointforsc/views/templates/admin/form.html.twig', [
             'crossSellingForm' => $form->createView(),
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
