@@ -44,3 +44,19 @@ services:
 
   prestashop.module.aa_endpointforsc.cache:
     class: PrestaShop\Module\AaEndpointForSc\Cache\LegacyLinkBlockCache
+
+
+  prestashop.module.aa_endpointforsc.choice_provider.carrier:
+    class: 'PrestaShop\Module\AaEndpointForSc\Form\Provider\CarrierChoiceProvider'
+
+
+  prestashop.module.aa_endpointforsc.type.carrier_choice:
+    class: 'PrestaShop\Module\AaEndpointForSc\Form\Type\CarrierMappingType'
+    arguments:
+      - '@translator'
+      - '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
+      - "@prestashop.module.aa_endpointforsc.carrier_mapping.repository"
+      - "@prestashop.module.aa_endpointforsc.choice_provider.carrier"
+
+    tags:
+      - { name: form.type }

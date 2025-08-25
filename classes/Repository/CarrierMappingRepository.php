@@ -113,7 +113,7 @@ class CarrierMappingRepository
 
         $queries = [
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}sendcloud_carrier`(
-    		    `id_sc_carrier` int(10) unsigned NOT NULL,
+    		    `id_sc_carrier` int(10) unsigned NOT NULL auto_increment,
                 `code` varchar(128) NOT NULL default '',
     			PRIMARY KEY (`id_sc_carrier`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
@@ -171,6 +171,22 @@ class CarrierMappingRepository
      * @return array
      */
     public function getCarrierMapping()
+    {
+        $qb = $this->connection->createQueryBuilder();
+
+        $qb->select('sc.id_sc_carrier, sc.code, scm.id_ps_reference_carrier ')
+            ->from($this->dbPrefix . 'sendcloud_carrier', 'sc')
+            ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier_mapping', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
+        ;
+
+        $mapping = $qb->execute()->fetchAll();
+        return $mapping;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPsCarrierName($idCarrierMapping)
     {
         $qb = $this->connection->createQueryBuilder();
 

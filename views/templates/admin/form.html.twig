@@ -3,7 +3,7 @@
 {% form_theme crossSellingForm '@Modules/aa_crossselling/views/templates/admin/fields.html.twig' %}
 
 {% block content %}
-  {% set formAction = url('admin__crossselling_global_process') %}
+  {% set formAction = url('admin_carrier_mapping_process') %}
   {{ form_start(crossSellingForm, {'action': formAction, 'attr': {'class': 'form', 'id': 'link_block_form'}}) }}
     <div class="row justify-content-center">
       <div class="col-xl-10">
@@ -14,7 +14,7 @@
           </h3>
           <div class="card-block">
             <div class="card-text">
-              {{ form_row(crossSellingForm.carrier_mapping) }}
+                    {{ form_row(crossSellingForm.carrier_mapping) }}
             </div>
           </div>
         </div>
