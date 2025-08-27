@@ -4,7 +4,6 @@ abstract class AbstractNotificationController extends ModuleFrontController
 {
     public function init()
     {
-        var_dump('hii');die;
         parent::init();
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':

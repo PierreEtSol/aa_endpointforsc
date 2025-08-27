@@ -55,25 +55,6 @@ class CarrierMappingRepository
      */
     private $translator;
 
-    /**
-     * @var bool
-     */
-    private $isMultiStoreUsed;
-
-    /**
-     * @var Context
-     */
-    private $multiStoreContext;
-
-    /**
-     * @var ObjectModelHandler
-     */
-    private $objectModelHandler;
-
-    /**
-     * @var idLang
-     */
-    private $idLang;
 
     /**
      * ColumnRepository constructor.
@@ -87,19 +68,12 @@ class CarrierMappingRepository
         Connection $connection,
         $dbPrefix,
         array $languages,
-        TranslatorInterface $translator,
-        bool $isMultiStoreUsed,
-        Context $multiStoreContext,
-        $idLang,
+        TranslatorInterface $translator
     ) {
         $this->connection = $connection;
         $this->dbPrefix = $dbPrefix;
         $this->languages = $languages;
         $this->translator = $translator;
-        $this->isMultiStoreUsed = $isMultiStoreUsed;
-        //$this->objectModelHandler = $objectModelHandler;
-        $this->multiStoreContext = $multiStoreContext;
-        $this->idLang = $idLang;
     }
 
     /**
@@ -119,8 +93,7 @@ class CarrierMappingRepository
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}sendcloud_carrier_mapping`(
     		    `id_sc_carrier` int(10) unsigned NOT NULL,
-                `id_ps_reference_carrier` int(10) unsigned NOT NULL,
-    			PRIMARY KEY (`id_sc_carrier` ,  `id_ps_reference_carrier`)
+                `id_ps_reference_carrier` int(10) unsigned
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
 
@@ -174,12 +147,13 @@ class CarrierMappingRepository
     {
         $qb = $this->connection->createQueryBuilder();
 
-        $qb->select('sc.id_sc_carrier, sc.code, scm.id_ps_reference_carrier ')
+        $qb->select('sc.id_sc_carrier, sc.code, scm.id_ps_reference_carrier')
             ->from($this->dbPrefix . 'sendcloud_carrier', 'sc')
             ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier_mapping', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
         ;
 
         $mapping = $qb->execute()->fetchAll();
+        //var_dump($qb->getSQL());die;
         return $mapping;
     }
 
@@ -188,15 +162,116 @@ class CarrierMappingRepository
      */
     public function getPsCarrierName($idCarrierMapping)
     {
+
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return string
+     *
+     * @throws DatabaseException
+     */
+    public function createMappingRecord($id_sc_carrier, $id_ps_reference_carrier)
+    {
         $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->insert($this->dbPrefix . 'sendcloud_carrier_mapping')
+            ->values([
+                'id_sc_carrier' => ':idScCarrier',
+                'id_ps_reference_carrier' => ':idPsReferenceCarrier',
+            ])
+            ->setParameters([
+                'idScCarrier' => $id_sc_carrier,
+                'idPsReferenceCarrier' =>  $id_ps_reference_carrier
+            ]);
 
-        $qb->select('sc.id_sc_carrier, sc.code, scm.id_ps_reference_carrier ')
-            ->from($this->dbPrefix . 'sendcloud_carrier', 'sc')
-            ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier_mapping', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
+        $this->executeQueryBuilder($qb, 'Mapping record creation error');
+
+        return ;
+    }
+
+    /**
+     * @return array
+     */
+    public function deleteMappingRecord($id_sc_carrier, $id_ps_reference_carrier)
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->delete($this->dbPrefix .'sendcloud_carrier_mapping')
+            ->andWhere('id_sc_carrier = :idScCarrier')
+            ->andWhere('id_ps_reference_carrier = :idPsReferenceCarrier')
+            ->setParameters([
+                'idScCarrier' => $id_sc_carrier,
+                'idPsReferenceCarrier' =>  $id_ps_reference_carrier
+            ]);
         ;
+        $this->executeQueryBuilder($qb, 'Mapping record Deletion error');
+    }
 
-        $mapping = $qb->execute()->fetchAll();
-        return $mapping;
+
+    public function createSendCloudCarriers($sendCloudCarriers)
+    {
+        $qb = $this->connection->createQueryBuilder();
+        foreach ($sendCloudCarriers as $sendCloudCarrier) {
+            $qb
+                ->insert($this->dbPrefix . 'sendcloud_carrier')
+                ->values([
+                    'id_sc_carrier' => ':idScCarrier',
+                    'code' => ':code',
+                ])
+                ->setParameters([
+                    'idScCarrier' => $sendCloudCarrier['id_sc_carrier'],
+                    'code' =>  $sendCloudCarrier['code'],
+                ]);
+            $this->executeQueryBuilder($qb, 'Mapping creation error');
+
+            $qb
+                ->insert($this->dbPrefix . 'sendcloud_carrier_mapping')
+                ->values([
+                    'id_sc_carrier' => ':idScCarrier',
+                ])
+                ->setParameters([
+                    'idScCarrier' => $sendCloudCarrier['id_sc_carrier'],
+                ]);
+            $this->executeQueryBuilder($qb, 'Mapping creation error');
+        }
+
+
+
+        return;
+    }
+
+    /**
+     * @return array
+     */
+    public function deleteSendCloudCarriers()
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->delete($this->dbPrefix .'sendcloud_carrier')
+            ;
+        ;
+        $this->executeQueryBuilder($qb, 'Mapping Deletion error');
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param string $errorPrefix
+     *
+     * @return Result|int|string
+     *
+     * @throws DatabaseException
+     */
+    private function executeQueryBuilder(QueryBuilder $qb, $errorPrefix = 'SQL error')
+    {
+        try {
+            $statement = $qb->execute();
+        } catch (DBALException $e) {
+            throw new DatabaseException($errorPrefix . ': ' . var_export($e->getMessage(), true));
+        }
+
+        return $statement;
     }
 
 }

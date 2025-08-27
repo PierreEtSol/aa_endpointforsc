@@ -7,7 +7,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 
-use PrestaShop\Module\AaEndpointForSC\Repository\CarrierMappingRepository;
+use PrestaShop\Module\AaEndpointForSc\Repository\CarrierMappingRepository;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 #use PrestaShop\Module\AaCarriersFooter\Model\CarrierFooter;
 
@@ -39,28 +39,46 @@ class Aa_Endpointforsc extends Module
 
     public function install()
     {
-        if (!parent::install()) {
+        $tablesInstalledWithSuccess = $this->createTables();
+        if (!$tablesInstalledWithSuccess) {
+            $this->uninstall();
+
             return false;
         }
-        $installed = false;
-        if (null !== $this->getRepository()) {
-            $installed = $this->installDatabase();
-        }
 
-        if ($installed
+        //$this->installTab();
+
+        return parent::install()
+            //&& Configuration::updateValue('CROSSSELLING_DISPLAY_PRICE', 1)
+            //&& Configuration::updateValue('CROSSSELLING_NBR', 8)
             && $this->registerHook('moduleRoutes')
-        ) {
-            return $installed;
+            ;
+    }
+    /**
+     * @return bool
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function createTables()
+    {
+        $result = $this->getRepository()->createTables();
+        if (false === $result || (is_array($result) && !empty($result))) {
+            if (is_array($result)) {
+                $this->addModuleErrors($result);
+            }
+
+            return false;
         }
 
-        $this->uninstall();
-
-        return $installed;
+        return true;
     }
 
     public function uninstall()
     {
-        return parent::uninstall();
+        return parent::uninstall()
+            //&& Configuration::deleteByName('CROSSSELLING_DISPLAY_PRICE')
+            //&& Configuration::deleteByName('CROSSSELLING_NBR');
+        ;
     }
     public function installDatabase() {
 
@@ -174,5 +192,15 @@ class Aa_Endpointforsc extends Module
             && $this->uninstallTab()
             ;
     }
+    /**
+     * @param array $errors
+     */
+    private function addModuleErrors(array $errors)
+    {
+        foreach ($errors as $error) {
+            $this->_errors[] = $this->trans($error['key'], $error['parameters'], $error['domain']);
+        }
+    }
+
 
 }

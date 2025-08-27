@@ -9,11 +9,8 @@ services:
       $dbPrefix: '%database_prefix%'
       $languages: '@=service("prestashop.adapter.legacy.context").getLanguages(true, service("prestashop.adapter.shop.context").getContextShopID())'
       $translator: '@translator'
-      $isMultiStoreUsed: '@=service("prestashop.adapter.feature.multistore").isUsed()'
-      $multiStoreContext: '@prestashop.adapter.shop.context'
-      $idLang: '@=service("prestashop.adapter.legacy.context").getLanguage().id'
 
-  prestashop.module.aa_endpointforsc.carrier_mapping.repository.form_handler:
+  prestashop.module.aa_endpointforsc.carrier_mapping.form_handler:
     class: PrestaShop\PrestaShop\Core\Form\FormHandler
     arguments:
       $formBuilder: '@=service("form.factory").createBuilder()'
@@ -60,3 +57,6 @@ services:
 
     tags:
       - { name: form.type }
+
+  prestashop.module.aa_endpointforsc.sendcloud_carriers:
+    class: 'PrestaShop\Module\AaEndpointForSc\Services\Carriers\SendCloudCarriers'

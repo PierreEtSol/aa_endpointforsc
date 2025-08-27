@@ -4,13 +4,20 @@ namespace PrestaShop\Module\AaEndpointForSc\Controller;
 
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use Symfony\Component\HttpFoundation\Request;
-
+use PrestaShop\Module\AaEndpointForSc\Services\Carriers\SendCloudCarriers;
 class CarrierMappingController extends FrameworkBundleAdminController
 {
     public function viewAction(Request $request)
     {
-        //$this->get('prestashop.module.aa_carriersfooter.form_provider')->setIdcarrierFooter($carrierFooterId);
-        $form = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository.form_handler')->getForm();
+        $sendCloudApi = $this->get('prestashop.module.aa_endpointforsc.sendcloud_carriers');
+        $sendCloudCarriers =  $sendCloudApi->getSendCloudCarriers();
+
+        $repository = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository');
+        $repository->deleteSendCloudCarriers($sendCloudCarriers);
+        $repository->createSendCloudCarriers($sendCloudCarriers);
+        //die;
+
+        $form = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.form_handler')->getForm();
 
         return $this->render('@Modules/aa_endpointforsc/views/templates/admin/form.html.twig', [
             'crossSellingForm' => $form->createView(),
@@ -24,24 +31,24 @@ class CarrierMappingController extends FrameworkBundleAdminController
     {
 
         /** @var FormHandlerInterface $formHandler */
-        /*
-        $formHandler = $this->get('prestashop.module.aa_crossselling.global.form_handler');
+
+        $formHandler = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.form_handler');
         $form = $formHandler->getForm();
         $form->handleRequest($request);
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->saveGlobalCrossSelling($request);
-            return $this->redirectToRoute('admin_crossselling_global_view');
+            $this->saveCarrierMapping($request);
+            return $this->redirectToRoute('admin_carrier_mapping_form_view');
         }
 
-        return $this->render('@Modules/aa_crossselling/views/templates/admin/form.html.twig', [
+        return $this->render('@Modules/aa_endpointforsc/views/templates/admin/form.html.twig', [
             'crossSellingForm' => $form->createView(),
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => $this->getToolbarButtons(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
         ]);
-        */
+
     }
 
     /**
@@ -59,17 +66,20 @@ class CarrierMappingController extends FrameworkBundleAdminController
     /**
      * @param array $params
      */
-    private function saveGlobalCrossSelling($request): void
+    private function saveCarrierMapping($request): void
     {
-        $repository = $this->get('prestashop.module.aa_crossselling.repository');
-        $products = $repository->getGlobalCrossSellingProducts();
+        $repository = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository');
+        $mapping = $repository->getCarrierMapping();
 
-        foreach ($products as $product) {
-            $repository->deleteGlobalCrossSellingProduct($product['id_product']);
+        foreach ( $mapping  as $key => $mappingRecord) {
+            $repository->deleteMappingRecord($mappingRecord['id_sc_carrier'],  $mappingRecord['id_ps_reference_carrier']);
         }
-        $requestProducts =  isset($request->request->all()['global']['crossselling']) ? $request->request->all()['global']['crossselling'] : [];
-        foreach ($requestProducts  as $key => $product) {
-            $repository->createForGlobal($product['id_product']);
+
+        $requestMapping =  isset($request->request->all()['carrier_mapping']) ? $request->request->all()['carrier_mapping'] : [];
+
+        foreach ($requestMapping  as $id_sc_carrier => $id_ps_reference_carrier) {
+            if (empty($id_ps_reference_carrier)) $id_ps_reference_carrier = null;
+            $repository->createMappingRecord($id_sc_carrier,  $id_ps_reference_carrier );
 
         }
     }

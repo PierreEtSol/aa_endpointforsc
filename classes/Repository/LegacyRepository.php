@@ -93,8 +93,7 @@ class LegacyRepository
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}sendcloud_carrier_mapping`(
     		    `id_sc_carrier` int(10) unsigned NOT NULL,
-                `id_ps_reference_carrier` int(10) unsigned NOT NULL,
-    			PRIMARY KEY (`id_sc_carrier` ,  `id_ps_reference_carrier`)
+                `id_ps_reference_carrier` int(10) unsigned
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
         foreach ($queries as $query) {

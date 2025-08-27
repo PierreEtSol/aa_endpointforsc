@@ -10,5 +10,5 @@ admin_carrier_mapping_process:
   path:  /carrier_mapping/process
   methods: [POST]
   defaults:
-    _controller: 'PrestaShop\Module\AaCrossSelling\Controller\CarrierMappingController::processAction'
+    _controller: 'PrestaShop\Module\AaEndpointForSc\Controller\CarrierMappingController::processAction'
     _legacy_controller: 'AaCarrierMappingController'

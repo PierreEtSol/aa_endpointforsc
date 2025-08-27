@@ -35,36 +35,21 @@ class CarrierMappingType extends TranslatorAwareType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $translator = $this->getTranslator();
         $mapping = $this->repository->getCarrierMapping();
         //echo "<pre>";
         //var_dump($mapping);die;
-        foreach ($mapping as $key => $value) {
-            //echo "<pre>";
-            var_dump($key);
-            $selectedCarrierName = array_search($value['id_ps_reference_carrier'], $this->carrierChoiceProvider->getChoices([]));
-            //var_dump($selectedCarrierName);//die;
-            // $nameScCarrierFormatted is the concatenation of id_ps_reference_carrier and sc carrier code.
-            // Slashe and equal charcaters in Sc Code are replaced by underscode to fit Sf Requirements
-            //$nameScCarrierFormatted =  str_replace(["/", "=", ":", '.'], "_", $value['code']) . '_' . $value['id_ps_reference_carrier'];
-            $nameScCarrierFormatted = 'sc_carrier_' . $value['id_sc_carrier'];
-//            $builder
-//                ->add( $nameScCarrierFormatted, ChoiceType::class, [
-//                    'choices' => $this->carrierChoiceProvider->getChoices([]),
-//                    'label' => $value['code'],
-//                    'required' => false,
-//                    //'attr' => ['class' => 'col-md-12'],
-//                    'data' => $selectedCarrierName
-//                    //'template' => '@Modules/aa_endpointforsc/views/templates/admin/subform.html.twig',
-////                    'data' => [
-////                        'mapping' => $mapping
-////                    ],
-//                ]);
 
+        foreach ($mapping as $key => $value) {
+            //var_dump($value);die;
+            if (!empty($value['id_ps_reference_carrier']))
+            {
+                $selectedCarrierName = array_search($value['id_ps_reference_carrier'], $this->carrierChoiceProvider->getChoices([]));
+            }
+            else $selectedCarrierName = '';
+            $nameScCarrierFormatted = 'sc_carrier_' . $value['id_sc_carrier'];
+            //var_dump($selectedCarrierName);die;
             $builder->add($nameScCarrierFormatted, CustomContentType::class, [
                 'label' => $value['code'],
-                //'required' => false,
-                //'attr' => ['class' => 'col-md-12'],
                 'template' => '@Modules/aa_endpointforsc/views/templates/admin/subform.html.twig',
                 'data' => [
                     'mapping' => $value,
@@ -73,9 +58,6 @@ class CarrierMappingType extends TranslatorAwareType
                ],
             ]);
         }
-        //var_dump($builder-);//die;
-        //die;
-//
     }
 
     /**
