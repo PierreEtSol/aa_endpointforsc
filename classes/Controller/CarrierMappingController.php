@@ -12,9 +12,9 @@ class CarrierMappingController extends FrameworkBundleAdminController
         $sendCloudApi = $this->get('prestashop.module.aa_endpointforsc.sendcloud_carriers');
         $sendCloudCarriers =  $sendCloudApi->getSendCloudCarriers();
 
-//        $repository = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository');
-//        $repository->deleteSendCloudCarriers($sendCloudCarriers);
-//        $repository->createSendCloudCarriers($sendCloudCarriers);
+        $repository = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository');
+        $repository->deleteSendCloudCarriers($sendCloudCarriers);
+        $repository->createSendCloudCarriers($sendCloudCarriers);
         //die;
 
         $form = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.form_handler')->getForm();

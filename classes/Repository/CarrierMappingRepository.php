@@ -226,15 +226,15 @@ class CarrierMappingRepository
                 ]);
             $this->executeQueryBuilder($qb, 'Mapping creation error');
 
-            $qb
-                ->insert($this->dbPrefix . 'sendcloud_carrier_mapping')
-                ->values([
-                    'id_sc_carrier' => ':idScCarrier',
-                ])
-                ->setParameters([
-                    'idScCarrier' => $sendCloudCarrier['id_sc_carrier'],
-                ]);
-            $this->executeQueryBuilder($qb, 'Mapping creation error');
+//            $qb
+//                ->insert($this->dbPrefix . 'sendcloud_carrier_mapping')
+//                ->values([
+//                    'id_sc_carrier' => ':idScCarrier',
+//                ])
+//                ->setParameters([
+//                    'idScCarrier' => $sendCloudCarrier['id_sc_carrier'],
+//                ]);
+//            $this->executeQueryBuilder($qb, 'Mapping creation error');
         }
 
 
@@ -253,11 +253,11 @@ class CarrierMappingRepository
             ;
         ;
         $this->executeQueryBuilder($qb, 'Mapping Deletion error');
-        $qb
-            ->delete($this->dbPrefix .'sendcloud_carrier_mapping')
-        ;
-        ;
-        $this->executeQueryBuilder($qb, 'Mapping Deletion error');
+//        $qb
+//            ->delete($this->dbPrefix .'sendcloud_carrier_mapping')
+//        ;
+//        ;
+//        $this->executeQueryBuilder($qb, 'Mapping Deletion error');
     }
 
     /**
