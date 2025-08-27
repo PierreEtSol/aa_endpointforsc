@@ -1,6 +1,11 @@
 services:
   _defaults:
     public: true
+  prestashop.module.aa_endpointforsc.carrier_mapping.bootsrap:
+    class: PrestaShop\Module\AaEndpointForSc\Bootstrap\Bootstrap
+    arguments:
+      $repository: '@prestashop.module.aa_endpointforsc.carrier_mapping.repository'
+
 
   prestashop.module.aa_endpointforsc.carrier_mapping.repository:
     class: PrestaShop\Module\AaEndpointForSc\Repository\CarrierMappingRepository

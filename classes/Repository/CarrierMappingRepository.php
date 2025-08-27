@@ -207,10 +207,24 @@ class CarrierMappingRepository
         $this->executeQueryBuilder($qb, 'Mapping record Deletion error');
     }
 
+    public function getIdPsReference($code)
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('scm.id_ps_reference_carrier')
+            ->from($this->dbPrefix . 'sendcloud_carrier_mapping', 'scm')
+            ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
+            ->andWhere('code = :code')
+            ->setParameter('code', $code)
+        ;
+
+        return $qb->execute()->fetchOne();
+
+    }
+
 
     public function createSendCloudCarriers($sendCloudCarriers)
     {
-
         foreach ($sendCloudCarriers as $sendCloudCarrier) {
             $qb = $this->connection->createQueryBuilder();
             $qb
@@ -247,8 +261,6 @@ class CarrierMappingRepository
                 ]);
                 $this->executeQueryBuilder($qb, 'Mapping creation error');
             }
-
-
         }
 
         return;

@@ -11,6 +11,11 @@ use SendCloud\BusinessLogic\Webhook\WebhookHandlerRegistry;
 
 class Bootstrap {
 
+    private $repository;
+    public function __construct($repository)
+    {
+        $this->repository = $repository;
+    }
     public function init() {
         $cs = new WebhookEventHandler();
 
@@ -23,7 +28,10 @@ class Bootstrap {
         if ($data) {
 
             $code = $data['parcel']['shipment']['code'];
-            $idCarrier = Parcel::getPsIdCarrierFromScShipmentCode($code);
+            $idCarrier = $this->repository->getIdPsReference($code);
+            CustomLogger::log($idCarrier);
+
+            // todo: if empty else
             $idOrder = (int) $data['parcel']['order_number'];
 
             // Update order_carrier
