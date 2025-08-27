@@ -4,6 +4,7 @@
     <select id="select_sc_carrier_{{ mapping.id_sc_carrier }}"
             name="carrier_mapping[{{ mapping.id_sc_carrier }}]"
     >
+        <option></option>
         {% for key, value in choices  %}
             <option value="{{ value }}" {% if selected_carrier_name == key %} selected="selected"{% endif %}>{{ key }}</option>
         {% endfor %}

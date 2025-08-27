@@ -43,6 +43,7 @@ class CarrierMappingType extends TranslatorAwareType
             //var_dump($value);die;
             if (!empty($value['id_ps_reference_carrier']))
             {
+                //var_dump(true);
                 $selectedCarrierName = array_search($value['id_ps_reference_carrier'], $this->carrierChoiceProvider->getChoices([]));
             }
             else $selectedCarrierName = '';

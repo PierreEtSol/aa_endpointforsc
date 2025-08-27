@@ -253,6 +253,11 @@ class CarrierMappingRepository
             ;
         ;
         $this->executeQueryBuilder($qb, 'Mapping Deletion error');
+        $qb
+            ->delete($this->dbPrefix .'sendcloud_carrier_mapping')
+        ;
+        ;
+        $this->executeQueryBuilder($qb, 'Mapping Deletion error');
     }
 
     /**
