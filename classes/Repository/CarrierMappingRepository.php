@@ -200,10 +200,8 @@ class CarrierMappingRepository
         $qb
             ->delete($this->dbPrefix .'sendcloud_carrier_mapping')
             ->andWhere('id_sc_carrier = :idScCarrier')
-            ->andWhere('id_ps_reference_carrier = :idPsReferenceCarrier')
             ->setParameters([
                 'idScCarrier' => $id_sc_carrier,
-                'idPsReferenceCarrier' =>  $id_ps_reference_carrier
             ]);
         ;
         $this->executeQueryBuilder($qb, 'Mapping record Deletion error');
@@ -212,8 +210,9 @@ class CarrierMappingRepository
 
     public function createSendCloudCarriers($sendCloudCarriers)
     {
-        $qb = $this->connection->createQueryBuilder();
+
         foreach ($sendCloudCarriers as $sendCloudCarrier) {
+            $qb = $this->connection->createQueryBuilder();
             $qb
                 ->insert($this->dbPrefix . 'sendcloud_carrier')
                 ->values([
@@ -226,18 +225,31 @@ class CarrierMappingRepository
                 ]);
             $this->executeQueryBuilder($qb, 'Mapping creation error');
 
-//            $qb
-//                ->insert($this->dbPrefix . 'sendcloud_carrier_mapping')
-//                ->values([
-//                    'id_sc_carrier' => ':idScCarrier',
-//                ])
-//                ->setParameters([
-//                    'idScCarrier' => $sendCloudCarrier['id_sc_carrier'],
-//                ]);
-//            $this->executeQueryBuilder($qb, 'Mapping creation error');
+            $qb = $this->connection->createQueryBuilder();
+            $qb
+                ->select('id_sc_carrier')
+                ->from($this->dbPrefix . 'sendcloud_carrier_mapping')
+                ->andWhere('id_sc_carrier = :scCarrierId')
+                ->setParameter('scCarrierId', $sendCloudCarrier['id_sc_carrier'])
+            ;
+
+            $foundRows = $qb->execute()->rowCount();
+            //var_dump($foundRows);die;
+            $qb = $this->connection->createQueryBuilder();
+            if (!$foundRows) {
+                $qb
+                ->insert($this->dbPrefix . 'sendcloud_carrier_mapping')
+                ->values([
+                    'id_sc_carrier' => ':idScCarrier',
+                ])
+                ->setParameters([
+                    'idScCarrier' => $sendCloudCarrier['id_sc_carrier'],
+                ]);
+                $this->executeQueryBuilder($qb, 'Mapping creation error');
+            }
+
+
         }
-
-
 
         return;
     }
