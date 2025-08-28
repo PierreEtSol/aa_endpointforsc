@@ -24,6 +24,7 @@ class Bootstrap {
         $hashed_signature = hash_hmac ( "sha256" , $rawData , $secret_key );
         $SendcloudSignature = $this->GetHeader('Sendcloud-Signature');
         $data = json_decode($rawData, true); // true for associative array
+        CustomLogger::log($data);
 
         if ($data) {
 
