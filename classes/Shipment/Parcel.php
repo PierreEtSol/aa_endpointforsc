@@ -10,7 +10,7 @@ class Parcel {
 
     public static function getPsIdCarrierFromScShipmentCode($code)
     {
-        CustomLogger::log($code);
+        //CustomLogger::log($code);
         return (int)CarrierProxy::CARRIER_LIST[$code];
 
     }

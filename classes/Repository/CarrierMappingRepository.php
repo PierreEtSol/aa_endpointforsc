@@ -28,7 +28,7 @@ use PrestaShop\Module\LinkList\Adapter\ObjectModelHandler;
 use PrestaShop\PrestaShop\Adapter\Shop\Context;
 use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
+use PrestaShop\Module\AaEndpointForSc\Logger\CustomLogger;
 
 /**
  * Class CarrierMappingRepository
@@ -209,16 +209,19 @@ class CarrierMappingRepository
 
     public function getIdPsReference($code)
     {
+        //CustomLogger::log($code);
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->select('scm.id_ps_reference_carrier')
             ->from($this->dbPrefix . 'sendcloud_carrier_mapping', 'scm')
-            ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
-            ->andWhere('code = :code')
+            ->innerJoin('scm', $this->dbPrefix . 'sendcloud_carrier', 'sc', 'sc.id_sc_carrier = scm.id_sc_carrier')
+            ->andWhere('sc.code = :code')
             ->setParameter('code', $code)
         ;
-
-        return $qb->execute()->fetchOne();
+        $id = $qb->execute()->fetchOne();
+        //CustomLogger::log($qb->getSQL());
+        //CustomLogger::log( $id );
+        return $id;
 
     }
 

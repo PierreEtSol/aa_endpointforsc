@@ -64,16 +64,6 @@ class Aa_endpointforscNotificationModuleFrontController extends ModuleFrontContr
     {
 
 
-        $kernel = new \AppKernel('prod', false);
-        $kernel->boot();
-        //dump($kernel->getContainer()); // Container OK, we can call $kernel->getContainer()->get('service')
-        $container = $kernel->getContainer();
-//
-//        // Retrieve a service by its ID
-//        // Replace 'your_company.your_module.your_service_id' with the actual ID of your service
-       $yourService = $container->get('prestashop.module.aa_endpointforsc.carrier_mapping.bootstrap');
-        // do something then output the result
-        var_dump(is_object($yourService));
 
         $this->ajaxDie(json_encode([
             'success' => true,
@@ -83,13 +73,17 @@ class Aa_endpointforscNotificationModuleFrontController extends ModuleFrontContr
 
     protected function processPostRequest()
     {
-        $container = $this->getContainer();
+        $kernel = new \AppKernel('prod', false);
+        $kernel->boot();
+        //dump($kernel->getContainer()); // Container OK, we can call $kernel->getContainer()->get('service')
+        $container = $kernel->getContainer();
+//
+//        // Retrieve a service by its ID
+//        // Replace 'your_company.your_module.your_service_id' with the actual ID of your service
+        $bootstrap = $container->get('prestashop.module.aa_endpointforsc.carrier_mapping.bootstrap');
+        // do something then output the result
+        $bootstrap->init();
 
-        // Retrieve a service by its ID
-        // Replace 'your_company.your_module.your_service_id' with the actual ID of your service
-        $yourService = $container->get('prestashop.module.aa_endpointforsc.carrier_mapping.bootstrap');
-       // $bootrap = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.bootstrap');
-        $yourService->init();
 
         $this->ajaxDie(json_encode([
             'success' => true,

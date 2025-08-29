@@ -17,10 +17,12 @@ class SendCloudCarriers {
         try {
 
             $shippingMethods = $sendCloudClient->shippingMethods()->all();
+            //echo "<pre>";
+            //var_dump($shippingMethods);die;
             foreach ($shippingMethods as $method) {
                 $sendCloudCarriers[] = [
                     'id_sc_carrier' => $method->id,
-                    'code' => $method->name,
+                    'name' => $method->name,
                 ];
             }
 

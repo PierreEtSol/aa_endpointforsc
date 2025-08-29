@@ -17,18 +17,20 @@ class Bootstrap {
         $this->repository = $repository;
     }
     public function init() {
-        $cs = new WebhookEventHandler();
+
+        CustomLogger::log('init');
+        //$cs = new WebhookEventHandler();
 
         $secret_key = '897hRT893qkA783M093ha903!';
         $rawData = file_get_contents("php://input");
         $hashed_signature = hash_hmac ( "sha256" , $rawData , $secret_key );
         $SendcloudSignature = $this->GetHeader('Sendcloud-Signature');
         $data = json_decode($rawData, true); // true for associative array
-        CustomLogger::log($data);
 
-        if ($data) {
+        if (isset($data['parcel']['shipment']['code'])) {
 
-            $code = $data['parcel']['shipment']['code'];
+            $code = $data['parcel']['shipment']['name'];
+            CustomLogger::log($code);
             $idCarrier = $this->repository->getIdPsReference($code);
             CustomLogger::log($idCarrier);
 
