@@ -88,7 +88,7 @@ class LegacyRepository
         $queries = [
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}sendcloud_carrier`(
     		    `id_sc_carrier` int(10) unsigned NOT NULL auto_increment,
-                `code` varchar(128) NOT NULL default '',
+                `name` varchar(128) NOT NULL default '',
     			PRIMARY KEY (`id_sc_carrier`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}sendcloud_carrier_mapping`(
