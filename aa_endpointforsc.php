@@ -32,8 +32,8 @@ class Aa_Endpointforsc extends Module
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('AA SendCloud WebHook Endpoint', [], 'Modules.Endpointsc.Admin');
-        $this->description = $this->trans('This module creates an endpoint URL that will receive notifications from SC webhook', [], 'Modules.Endpointsc.Admin');
+        $this->displayName = $this->trans('AA SendCloud Extensions', [], 'Modules.AAendpointforsc.Admin');
+        $this->description = $this->trans('This module creates an endpoint URL that will receive notifications from SC webhook', [], 'Modules.AAendpointforsc.Admin');
     }
 
 
@@ -49,8 +49,9 @@ class Aa_Endpointforsc extends Module
         //$this->installTab();
 
         return parent::install()
-            //&& Configuration::updateValue('CROSSSELLING_DISPLAY_PRICE', 1)
-            //&& Configuration::updateValue('CROSSSELLING_NBR', 8)
+            && Configuration::updateValue('SENDCLOUD_WEBHOOK_SIGNATURE_KEY', '')
+            && Configuration::updateValue('SENDCLOUD_API_PUBLIC_KEY', '')
+            && Configuration::updateValue('SENDCLOUD_API_SECRET_KEY', '')
             && $this->registerHook('moduleRoutes')
             ;
     }
@@ -76,8 +77,9 @@ class Aa_Endpointforsc extends Module
     public function uninstall()
     {
         return parent::uninstall()
-            //&& Configuration::deleteByName('CROSSSELLING_DISPLAY_PRICE')
-            //&& Configuration::deleteByName('CROSSSELLING_NBR');
+            && Configuration::deleteByName('SENDCLOUD_WEBHOOK_SIGNATURE_KEY')
+            && Configuration::deleteByName('SENDCLOUD_API_PUBLIC_KEY')
+            && Configuration::deleteByName('SENDCLOUD_API_SECRET_KEY')
         ;
     }
     public function installDatabase() {
@@ -202,5 +204,89 @@ class Aa_Endpointforsc extends Module
         }
     }
 
+
+    public function getContent()
+    {
+        $this->html = '';
+
+        if (Tools::isSubmit('submitKeys')) {
+                Configuration::updateValue('SENDCLOUD_WEBHOOK_SIGNATURE_KEY', Tools::getValue('SENDCLOUD_WEBHOOK_SIGNATURE_KEY'));
+                Configuration::updateValue('SENDCLOUD_API_PUBLIC_KEY', Tools::getValue('SENDCLOUD_API_PUBLIC_KEY'));
+                Configuration::updateValue('SENDCLOUD_API_SECRET_KEY', Tools::getValue('SENDCLOUD_API_SECRET_KEY'));
+
+                $this->html .= $this->displayConfirmation($this->trans('The settings have been updated.', [], 'Admin.Notifications.Success'));
+        }
+
+        $this->html .= $this->renderForm();
+
+        return $this->html;
+    }
+
+    public function renderForm()
+    {
+        $fields_form = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->trans('Settings', [], 'Admin.Global'),
+                    'icon' => 'icon-cogs',
+                ],
+                'input' => [
+                    [
+                        'type' => 'text',
+                        'label' => $this->trans('SendCloud Webhook Signature Key', [], 'Modules.Categoryproducts.Admin'),
+                        'desc' => $this->trans('', [], 'Modules.Categoryproducts.Admin'),
+                        'name' => 'SENDCLOUD_WEBHOOK_SIGNATURE_KEY',
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->trans('SendCloud API Public Key', [], 'Modules.Categoryproducts.Admin'),
+                        'desc' => $this->trans('', [], 'Modules.Categoryproducts.Admin'),
+                        'name' => 'SENDCLOUD_API_PUBLIC_KEY',
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->trans('SendCloud API Secret Key', [], 'Modules.Categoryproducts.Admin'),
+                        'desc' => $this->trans('', [], 'Modules.Categoryproducts.Admin'),
+                        'name' => 'SENDCLOUD_API_SECRET_KEY',
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->trans('Save', [], 'Admin.Actions'),
+                ],
+            ],
+        ];
+
+        $lang = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
+
+        $helper = new HelperForm();
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $helper->default_form_language = $lang->id;
+        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get(
+            'PS_BO_ALLOW_EMPLOYEE_FORM_LANG'
+        ) : 0;
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submitKeys';
+        $helper->currentIndex = $this->context->link->getAdminLink(
+                'AdminModules',
+                false
+            ) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->tpl_vars = [
+            'fields_value' => $this->getConfigFieldsValues(),
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
+        ];
+
+        return $helper->generateForm([$fields_form]);
+    }
+    public function getConfigFieldsValues()
+    {
+        return [
+            'SENDCLOUD_WEBHOOK_SIGNATURE_KEY' => Configuration::get('SENDCLOUD_WEBHOOK_SIGNATURE_KEY'),
+            'SENDCLOUD_API_PUBLIC_KEY' => Configuration::get('SENDCLOUD_API_PUBLIC_KEY'),
+            'SENDCLOUD_API_SECRET_KEY' => Configuration::get('SENDCLOUD_API_SECRET_KEY'),
+        ];
+    }
 
 }
