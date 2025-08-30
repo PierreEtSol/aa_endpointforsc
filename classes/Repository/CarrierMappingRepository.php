@@ -147,7 +147,7 @@ class CarrierMappingRepository
     {
         $qb = $this->connection->createQueryBuilder();
 
-        $qb->select('sc.id_sc_carrier, sc.code, scm.id_ps_reference_carrier')
+        $qb->select('sc.id_sc_carrier, sc.name, scm.id_ps_reference_carrier')
             ->from($this->dbPrefix . 'sendcloud_carrier', 'sc')
             ->innerJoin('sc', $this->dbPrefix . 'sendcloud_carrier_mapping', 'scm', 'sc.id_sc_carrier = scm.id_sc_carrier')
         ;
@@ -207,7 +207,7 @@ class CarrierMappingRepository
         $this->executeQueryBuilder($qb, 'Mapping record Deletion error');
     }
 
-    public function getIdPsReference($code)
+    public function getIdPsReference($name)
     {
         //CustomLogger::log($code);
         $qb = $this->connection->createQueryBuilder();
@@ -215,8 +215,8 @@ class CarrierMappingRepository
             ->select('scm.id_ps_reference_carrier')
             ->from($this->dbPrefix . 'sendcloud_carrier_mapping', 'scm')
             ->innerJoin('scm', $this->dbPrefix . 'sendcloud_carrier', 'sc', 'sc.id_sc_carrier = scm.id_sc_carrier')
-            ->andWhere('sc.code = :code')
-            ->setParameter('code', $code)
+            ->andWhere('sc.name = :name')
+            ->setParameter('name', $name)
         ;
         $id = $qb->execute()->fetchOne();
         //CustomLogger::log($qb->getSQL());
@@ -225,6 +225,67 @@ class CarrierMappingRepository
 
     }
 
+    public function getIdCarrierFromReference($id_reference)
+    {
+        //CustomLogger::log($code);
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('id_carrier')
+            ->from($this->dbPrefix . 'carrier', 'c')
+            ->andWhere('c.id_reference = :referenceId')
+            ->setParameter('referenceId', $id_reference)
+        ;
+        $id = $qb->execute()->fetchOne();
+        //CustomLogger::log($qb->getSQL());
+        //CustomLogger::log( $id );
+        return $id;
+
+    }
+
+    public function getIdOrderCarrierFromOrder($id_order)
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('id_order_carrier')
+            ->from($this->dbPrefix . 'order_carrier', 'oc')
+            ->andWhere('oc.id_order = :orderCarrierId')
+            ->setParameter('orderCarrierId', $id_order)
+        ;
+        $id = $qb->execute()->fetchOne();
+
+        return $id;
+
+    }
+    public function updateOrderCarrierInOrderTable($idCarrier, $idOrder) {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->update($this->dbPrefix . 'orders', 'o')
+            ->set('id_carrier', ':carrierId')
+            ->andWhere('o.id_order = :orderId')
+        ;
+        $qb
+            ->setParameters([
+                'carrierId' => $idCarrier,
+                'orderId' => $idOrder,
+                ]);
+
+        $this->executeQueryBuilder($qb, 'Mapping creation error');
+    }
+    public function updateOrderCarrierInOrderCarrierTable($idCarrier, $idOrderCarrier) {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->update($this->dbPrefix . 'order_carrier', 'oc')
+            ->set('id_carrier', ':carrierId')
+            ->andWhere('oc.id_order_carrier = :orderCarrierId')
+        ;
+        $qb
+            ->setParameters([
+                'carrierId' => $idCarrier,
+                'orderCarrierId' => $idOrderCarrier,
+            ]);
+
+        $this->executeQueryBuilder($qb, 'Mapping creation error');
+    }
 
     public function createSendCloudCarriers($sendCloudCarriers)
     {

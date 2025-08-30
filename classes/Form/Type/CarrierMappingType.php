@@ -36,21 +36,16 @@ class CarrierMappingType extends TranslatorAwareType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $mapping = $this->repository->getCarrierMapping();
-        //echo "<pre>";
-        //var_dump($mapping);die;
 
         foreach ($mapping as $key => $value) {
-            //var_dump($value);die;
             if (!empty($value['id_ps_reference_carrier']))
             {
-                //var_dump(true);
                 $selectedCarrierName = array_search($value['id_ps_reference_carrier'], $this->carrierChoiceProvider->getChoices([]));
             }
             else $selectedCarrierName = '';
             $nameScCarrierFormatted = 'sc_carrier_' . $value['id_sc_carrier'];
-            //var_dump($selectedCarrierName);die;
             $builder->add($nameScCarrierFormatted, CustomContentType::class, [
-                'label' => $value['code'],
+                'label' => $value['name'],
                 'template' => '@Modules/aa_endpointforsc/views/templates/admin/subform.html.twig',
                 'data' => [
                     'mapping' => $value,

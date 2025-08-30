@@ -8,6 +8,8 @@ use SendCloud\BusinessLogic\Webhook\Handler\BaseWebhookHandler;
 use SendCloud\BusinessLogic\Webhook\Utility\WebhookHelper;
 use SendCloud\BusinessLogic\Webhook\WebhookEventHandler;
 use SendCloud\BusinessLogic\Webhook\WebhookHandlerRegistry;
+use Db;
+
 
 class Bootstrap {
 
@@ -18,7 +20,7 @@ class Bootstrap {
     }
     public function init() {
 
-        CustomLogger::log('init --------------------------------------');
+        CustomLogger::log('init --------------------------------------' . time());
         //$cs = new WebhookEventHandler();
 
         $secret_key = '897hRT893qkA783M093ha903!';
@@ -27,7 +29,7 @@ class Bootstrap {
         $SendcloudSignature = $this->GetHeader('Sendcloud-Signature');
         $data = json_decode($rawData, true); // true for associative array
 
-        if (isset($data['parcel']['shipment']['code'])) {
+        if (hash_equals($hashed_signature, $SendcloudSignature)) {
             $code = $data['parcel']['shipment']['code'];
             CustomLogger::log('code: '. $code);
             $name = $data['parcel']['shipment']['name'];
@@ -35,36 +37,26 @@ class Bootstrap {
             $idReferenceCarrier = $this->repository->getIdPsReference($name);
             CustomLogger::log('reference: '. $idReferenceCarrier);
 
-
-            $idCarrier = Db::getInstance()->getValue('
-                SELECT `id_carrier`
-                FROM `' . _DB_PREFIX_ . 'carrier`
-                WHERE `id_reference` = ' . (int)$idReferenceCarrier
-            );
-
+            $idCarrier =  $this->repository->getIdCarrierFromReference($idReferenceCarrier);
             CustomLogger::log('id_carrier: '. $idCarrier);
 
             // todo: if empty else
             $idOrder = (int) $data['parcel']['order_number'];
+            CustomLogger::log('order: '. $idOrder);
 
-            // Update order_carrier
-            $order =  new Order($idOrder);
-            $order->id_carrier = $idCarrier;
-            $order->update();
+            $idOrderCarrier =  $this->repository->getIdOrderCarrierFromOrder($idOrder);
+            CustomLogger::log('order carrier: '.  $idOrderCarrier);
 
-            $id_order_carrier = Db::getInstance()->getValue('
-                SELECT `id_order_carrier`
-                FROM `' . _DB_PREFIX_ . 'order_carrier`
-                WHERE `id_order` = ' . (int)$order->id
-            );
-
-            if ($id_order_carrier) {
-                $order_carrier = new OrderCarrier((int) $id_order_carrier);
-                $order_carrier->id_carrier = (int)$idCarrier;
-                $order_carrier->update();
+            $this->repository->updateOrderCarrierInOrderTable($idCarrier, $idOrder);
+            CustomLogger::log('order carrier updated in order table');
+            if ($idOrderCarrier) {
+                $this->repository->updateOrderCarrierInOrderCarrierTable($idCarrier, $idOrderCarrier);
+                CustomLogger::log('order carrier updated in order carrier table');
             }
-
+        } else {
+            CustomLogger::log('HMAC signature verification failed. Data may be tampered or sender is not authorized.');
         }
+
 
 
     }
