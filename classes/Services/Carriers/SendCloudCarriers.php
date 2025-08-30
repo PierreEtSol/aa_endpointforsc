@@ -4,14 +4,36 @@ namespace PrestaShop\Module\AaEndpointForSc\Services\Carriers;
 
 use Picqer\Carriers\SendCloud\Connection;
 use Picqer\Carriers\SendCloud\SendCloud;
-
+use Configuration;
 
 
 class SendCloudCarriers {
 
-    public function getSendCloudCarriers() {
+//    /**
+//     * @var Configuration
+//     */
+//    protected $configService;
+//    /**
+//     * @return Configuration
+//     */
+//    protected function getConfigService()
+//    {
+//        if ($this->configService === null) {
+//            $this->configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+//        }
+//
+//        return $this->configService;
+//    }
 
-        $connection = new Connection('9a4d81fe-7a4d-4d6b-b84b-f4cef6080db0', 'e6c8e697c6f3406bbcc3c66b718c4d4a');
+
+    public function getSendCloudCarriers() {
+  //      $publicKey = $this->getConfigService()->getPublicKey() ;
+    //    $secretKey = $this->getConfigService()->getSecretKey() ;
+
+        $publicKey = Configuration::get('SENDCLOUD_API_PUBLIC_KEY') ;
+        $secretKey = Configuration::get('SENDCLOUD_API_SECRET_KEY') ;
+
+        $connection = new Connection($publicKey,  $secretKey);
         $sendCloudClient = new SendCloud($connection);
         $sendCloudCarriers = [];
         try {
