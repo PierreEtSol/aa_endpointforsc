@@ -153,16 +153,7 @@ class CarrierMappingRepository
         ;
 
         $mapping = $qb->execute()->fetchAll();
-        //var_dump($qb->getSQL());die;
         return $mapping;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPsCarrierName($idCarrierMapping)
-    {
-
     }
 
     /**
@@ -207,9 +198,22 @@ class CarrierMappingRepository
         $this->executeQueryBuilder($qb, 'Mapping record Deletion error');
     }
 
-    public function getIdPsReference($name)
+    public function getIdPsReference($id_sc_carrier)
     {
-        //CustomLogger::log($code);
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('scm.id_ps_reference_carrier')
+            ->from($this->dbPrefix . 'sendcloud_carrier_mapping', 'scm')
+            ->andWhere('scm.id_sc_carrier = :sCCarrierId')
+            ->setParameter('sCCarrierId', $id_sc_carrier)
+        ;
+        $id = $qb->execute()->fetchOne();
+        return $id;
+
+    }
+
+    public function getIdPsReferenceFromName($name)
+    {
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->select('scm.id_ps_reference_carrier')
@@ -219,15 +223,12 @@ class CarrierMappingRepository
             ->setParameter('name', $name)
         ;
         $id = $qb->execute()->fetchOne();
-        //CustomLogger::log($qb->getSQL());
-        //CustomLogger::log( $id );
         return $id;
 
     }
 
     public function getIdCarrierFromReference($id_reference)
     {
-        //CustomLogger::log($code);
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->select('id_carrier')
@@ -236,10 +237,7 @@ class CarrierMappingRepository
             ->setParameter('referenceId', $id_reference)
         ;
         $id = $qb->execute()->fetchOne();
-        //CustomLogger::log($qb->getSQL());
-        //CustomLogger::log( $id );
         return $id;
-
     }
 
     public function getIdOrderCarrierFromOrder($id_order)
@@ -341,11 +339,7 @@ class CarrierMappingRepository
             ;
         ;
         $this->executeQueryBuilder($qb, 'Mapping Deletion error');
-//        $qb
-//            ->delete($this->dbPrefix .'sendcloud_carrier_mapping')
-//        ;
-//        ;
-//        $this->executeQueryBuilder($qb, 'Mapping Deletion error');
+
     }
 
     /**

@@ -15,7 +15,6 @@ class CarrierMappingController extends FrameworkBundleAdminController
         $repository = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.repository');
         $repository->deleteSendCloudCarriers($sendCloudCarriers);
         $repository->createSendCloudCarriers($sendCloudCarriers);
-        //die;
 
         $form = $this->get('prestashop.module.aa_endpointforsc.carrier_mapping.form_handler')->getForm();
 
