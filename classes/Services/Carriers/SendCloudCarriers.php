@@ -9,7 +9,6 @@ use Configuration;
 
 class SendCloudCarriers {
 
-
     public function getSendCloudCarriers() {
 
         $publicKey = Configuration::get('SENDCLOUD_API_PUBLIC_KEY') ;
@@ -42,6 +41,7 @@ class SendCloudCarriers {
             echo "Error: " . $e->getMessage();
         }
     }
+
     public function getShippingMethods($sendCloudClient, $senderAddressId) {
         $senderShippingMethods = [];
         try {
@@ -58,5 +58,4 @@ class SendCloudCarriers {
             echo "Error: " . $e->getMessage();
         }
     }
-
 }
